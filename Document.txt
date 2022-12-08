@@ -1,0 +1,64 @@
+npm i -y 
+
+npm i expres
+npm i -D nodemon
+"dev": "nodemon index" #package.json
+
+#routering 
+
+app.get("port", (req,res) => { 
+    res.send("<h>hey</h1>")
+})
+
+#shit
+res.sendFile(path.join(__dirname, "public", "index.html"));
+
+#better
+app.use(express.static(path.join(__dirname, "public"))); #use pro používaní middleware #static nadefinovaná dložka
+
+/* static routing with html,css,js */
+app.use(express.static(path.join(__dirname, "public")));
+
+/* api */
+app.get("/api/members", (req, res) => res.json(members));
+
+/* static */
+app.get("/", (req, res) => {
+  /* posílá file pomocí spoje path, aktuální složka  v ní public soubour index.html */
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+#exporting from Module js file
+module.exports = members;
+
+#importing from Module
+const members = require("./Members");
+
+/* creating middleware */
+const logger = (req, res, next) => {
+  console.log("hello");
+  next();
+};
+
+/* ussing middleware */
+app.use(logger);
+
+#middleware trigrováni 
+console.log(`${req.protocol}://${req.get("host")}${req.originalUrl}`);
+
+#trackovaní casu npm i moment
+
+/* api  */
+app.get("/api/members/:id", (req, res) => {
+  const found = members.some((member) => member.id === parseInt(req.params.id));
+
+  if (found) {
+    res.json(
+      members.filter((member) => {
+        return member.id === parseInt(req.params.id);
+      })
+    );
+  } else {
+    res.status(400).json({ msg: `No member with id ${req.params.id}` });
+  }
+});
